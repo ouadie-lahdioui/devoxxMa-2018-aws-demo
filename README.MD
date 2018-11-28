@@ -1,41 +1,36 @@
-
-# Pré-requis
-Dans le terminal
-```bash
-export AWS_PROFILE=dev
-```
-
 # DEMO Lambda Node.js
 
-0. Création de la table DynamoDB **"attendees"** dans la console AWS
+0. Création de la table DynamoDB **"speakers"** dans la console AWS
 Item 1 :
 ```
 {
-  "firstName": "James",
-  "id": "1",
-  "job": "developer",
-  "lastName": "Bond"
+  "id": "103843c6-efe3-4e46-8d3d-858ad725f6fd",
+  "firstName": "Abdellatif",
+  "lastName": "BOUCHAMA",
+  "company": "Red Hat",
+  "twitter": "@a_bouchama"
 }
 ```
 
 Item 2 :
 ```
 {
-  "firstName": "Soufiane",
-  "id": "2",
-  "job": "developer",
-  "lastName": "Lamnizeh"
+  "id": "6289ed11-40e8-475e-8a54-4fe75e6108de",
+  "firstName": "Bruno",
+  "lastName": "Borges",
+  "company": "Microsoft",
+  "twitter": "@brunoborges"
 }
 ```
 
 1. Présentation **package.json**
 
-2. Création **repositories/AttendeesRepository.js**
+2. Création **repositories/SpeakersRepository.js**
 ```javascript
 const dynamo = require('./dynamodbsdk').DocumentClient;
 
 module.exports.list = function () {
-  return dynamo.scan({TableName : 'attendees'})
+  return dynamo.scan({TableName : 'speakers'})
     .promise()
     .then(result => result.Items);
 };
@@ -50,9 +45,9 @@ module.exports.get = function (id) {
 };
 ```
 
-3. Création **handlers/AttendeesHandler.js**
+3. Création **handlers/SpeakersHandler.js**
 ```javascript
-const repo = require('../repositories/AttendeesRepository');
+const repo = require('../repositories/SpeakersRepository');
 
 module.exports.list = function (event, context, callback) {
   repo.list().then(result => {
@@ -84,7 +79,7 @@ module.exports.get = function (event, context, callback) {
 ```
 4. Création **serverless.yml**
 ```yaml
-service: node-devoxx
+service: devoxx-2018-speakers-api
 
 provider:
   name: aws
@@ -94,26 +89,36 @@ provider:
 
   iamRoleStatements:
     - Effect: Allow
+      Action:
+        - xray:PutTraceSegments
+        - xray:PutTelemetryRecords
+      Resource: "*"
+    - Effect: Allow
       Action: "dynamodb:*"
-      Resource: "arn:aws:dynamodb:us-east-1:*:table/attendees"
+      Resource: "arn:aws:dynamodb:us-east-1:*:table/speakers"
 
+plugins:
+  # APM
+  - serverless-plugin-tracing
+  # Run local API gateway
+  - serverless-offline
 
 functions:
 
   attendee-list:
-    handler: handlers/AttendeesHandler.list
-    name: devoxx-attendee-list
+    handler: handlers/SpeakersHandler.list
+    name: devoxx-2018-speakers-api-list
     events:
       - http:
-          path: /attendees
+          path: /speakers
           method: get
 
   attendee-get:
-    handler: handlers/AttendeesHandler.get
-    name: devoxx-attendee-get
+    handler: handlers/SpeakersHandler.get
+    name: devoxx-2018-speakers-api-get
     events:
       - http:
-          path: /attendees/{id}
+          path: /speakers/{id}
           method: get
 
 ```
@@ -134,26 +139,3 @@ serverless offline start
 ```bash
 serverless deploy
 ```
-
-8. Tester : remplacer le TODO dans le fichier **tests/attendees.test.js**
-```javascript
-utils.insertTable('attendees', {id: "test1", name: "john"})
-      .then(() => {
-
-        const events = {
-          pathParameters: {
-            id: "test1"
-          }
-        };
-
-        get(events, null)
-          .then(attendee => {
-            expect(attendee).to.be.not.undefined;
-            expect(attendee.name).to.be.equal('john');
-          })
-
-      })
-      .then(() => done())
-      .catch(err => done(err));
-```
-

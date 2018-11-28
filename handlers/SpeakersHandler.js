@@ -1,4 +1,4 @@
-const repo = require('../repositories/AttendeesRepository');
+const repo = require('../repositories/SpeakersRepository');
 
 module.exports.list = function (event, context, callback) {
   repo.list().then(result => {
@@ -23,7 +23,6 @@ module.exports.get = function (event, context, callback) {
         body: JSON.stringify(result)
       };
     }
-
     callback(null, response);
   });
 };

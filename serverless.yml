@@ -1,4 +1,4 @@
-service: node-devoxx
+service: devoxx-2018-speakers-api
 
 provider:
   name: aws
@@ -14,7 +14,7 @@ provider:
       Resource: "*"
     - Effect: Allow
       Action: "dynamodb:*"
-      Resource: "arn:aws:dynamodb:us-east-1:*:table/attendees"
+      Resource: "arn:aws:dynamodb:us-east-1:*:table/speakers"
 
 plugins:
   # APM
@@ -25,17 +25,17 @@ plugins:
 functions:
 
   attendee-list:
-    handler: handlers/AttendeesHandler.list
-    name: devoxx-attendee-list
+    handler: handlers/SpeakersHandler.list
+    name: devoxx-2018-speakers-api-list
     events:
       - http:
-          path: /attendees
+          path: /speakers
           method: get
 
   attendee-get:
-    handler: handlers/AttendeesHandler.get
-    name: devoxx-attendee-get
+    handler: handlers/SpeakersHandler.get
+    name: devoxx-2018-speakers-api-get
     events:
       - http:
-          path: /attendees/{id}
+          path: /speakers/{id}
           method: get

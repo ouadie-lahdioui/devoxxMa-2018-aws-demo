@@ -1,9 +1,6 @@
 {
-  "name": "nodejs-api",
+  "name": "devoxx-2018-speakers-api",
   "version": "1.0.0",
-  "scripts": {
-    "test": "NODE_ENV=test mocha tests/*.test.js"
-  },
   "devDependencies": {
     "bluebird": "3.5.1",
     "chai": "4.1.2",
