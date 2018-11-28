@@ -24,7 +24,7 @@ plugins:
 
 functions:
 
-  attendee-list:
+  speakers-list:
     handler: handlers/SpeakersHandler.list
     name: devoxx-2018-speakers-api-list
     events:
@@ -32,7 +32,7 @@ functions:
           path: /speakers
           method: get
 
-  attendee-get:
+  speakers-get:
     handler: handlers/SpeakersHandler.get
     name: devoxx-2018-speakers-api-get
     events:
